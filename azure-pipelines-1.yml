@@ -1,33 +1,10 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
-trigger:
-- master
-
-pool:
-  vmImage: ubuntu-latest
-
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
-- script: |
-    curl -O -L https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
-  displayName: 'Download Pipeline Scanner'
-- task: ExtractFiles@1
+- task: Maven@3
   inputs:
-    archiveFilePatterns: 'pipeline-scan-LATEST.zip'
-    destinationFolder: 'pipeline'
-    cleanDestinationFolder: true
-- script: |
-      java -jar pipeline\pipeline-scan.jar --veracode_api_id "$(VERACODE_API_ID)" --veracode_api_key "$(VERACODE_API_KEY)" --file "example.jar" --fail_on_severity="Very High"
-  env:
-    VERACODE_API_ID: $(VERACODE_API_ID)
-    VERACODE_API_KEY: $(VERACODE_API_KEY)
-  displayName: 'Run Pipeline Scan'
+    mavenPomFile: 'pom.xml'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    effectivePomSkip: false
+    sonarQubeRunAnalysis: false
